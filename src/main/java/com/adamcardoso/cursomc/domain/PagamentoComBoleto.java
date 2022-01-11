@@ -3,6 +3,8 @@ package com.adamcardoso.cursomc.domain;
 import com.adamcardoso.cursomc.domain.enums.EstadoPagamento;
 
 import javax.persistence.Entity;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.Date;
 
 @Entity
@@ -10,7 +12,10 @@ public class PagamentoComBoleto extends Pagamento{
 
     private static final long serialVersionUID = 1L;
 
+    @Temporal(TemporalType.DATE)
     private Date dataVencimento;
+
+    @Temporal(TemporalType.DATE)
     private Date dataPagamento;
 
     public PagamentoComBoleto() {
