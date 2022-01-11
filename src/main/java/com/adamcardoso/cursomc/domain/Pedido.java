@@ -1,5 +1,8 @@
 package com.adamcardoso.cursomc.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -15,12 +18,14 @@ public class Pedido implements Serializable {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer id;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private Date instante;
 
+    @JsonManagedReference
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "pedido")
     private Pagamento pagamento;
 
+    @JsonManagedReference
     @ManyToOne
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
@@ -30,7 +35,7 @@ public class Pedido implements Serializable {
     private Endereco enderecoDeEntrega;
 
     @OneToMany(mappedBy = "id.pedido")
-    private Set<ItemPedido> items = new HashSet<>();
+    private Set<ItemPedido> itens = new HashSet<>();
 
     public Pedido() {
     }
@@ -82,12 +87,12 @@ public class Pedido implements Serializable {
         this.enderecoDeEntrega = enderecoDeEntrega;
     }
 
-    public Set<ItemPedido> getItems() {
-        return items;
+    public Set<ItemPedido> getItens() {
+        return itens;
     }
 
-    public void setItems(Set<ItemPedido> items) {
-        this.items = items;
+    public void setItens(Set<ItemPedido> itens) {
+        this.itens = itens;
     }
 
     @Override
