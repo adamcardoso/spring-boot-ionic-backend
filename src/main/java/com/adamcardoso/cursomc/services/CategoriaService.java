@@ -24,4 +24,10 @@ public class CategoriaService {
         obj.setId(null);
         return repo.save(obj);
     }
+
+    public Categoria update(Categoria obj) {
+        find(obj.getId()); //verificação se o id existe, se não existe, chama a excessão
+
+        return repo.save(obj);
+    }
 }
