@@ -1,6 +1,7 @@
 package com.adamcardoso.cursomc.services;
 
 import com.adamcardoso.cursomc.domain.Categoria;
+import com.adamcardoso.cursomc.dto.CategoriaDTO;
 import com.adamcardoso.cursomc.repositories.CategoriaRepository;
 import com.adamcardoso.cursomc.services.exceptions.DataIntegrityException;
 import com.adamcardoso.cursomc.services.exceptions.ObjectNotFoundException;
@@ -32,17 +33,18 @@ public class CategoriaService {
     }
 
     public Categoria update(Categoria obj) {
-        find(obj.getId()); //verificação se o id existe, se não existe, chama a excessão
-
-        return repo.save(obj);
+        Categoria newObj = find(obj.getId());
+        updateData(newObj, obj);
+        return repo.save(newObj);
     }
 
     public void delete(Integer id) {
         find(id);
-        try{
+        try {
             repo.deleteById(id);
-        }catch (DataIntegrityViolationException e){
-            throw  new DataIntegrityException("Não é possível excluir uma categoria que possui produtos!");
+        }
+        catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityException("Não é possível excluir uma categoria que possui produtos");
         }
     }
 
@@ -50,9 +52,16 @@ public class CategoriaService {
         return repo.findAll();
     }
 
-    public Page<Categoria> findPage(Integer page, Integer linesPerPage, String orderBy, String direction){
+    public Page<Categoria> findPage(Integer page, Integer linesPerPage, String orderBy, String direction) {
         PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
-
         return repo.findAll(pageRequest);
+    }
+
+    public Categoria fromDTO(CategoriaDTO objDto) {
+        return new Categoria(objDto.getId(), objDto.getNome());
+    }
+
+    private void updateData(Categoria newObj, Categoria obj) {
+        newObj.setNome(obj.getNome());
     }
 }
