@@ -8,38 +8,38 @@ import java.io.Serializable;
 import java.util.*;
 
 @Entity
-public class Cliente  implements Serializable {
-
+public class Cliente implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //geração automática dos IDs
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer id;
     private String nome;
     private String email;
     private String cpfOuCnpj;
-    private Integer tipoCliente;
+    private Integer tipo;
 
-    @OneToMany(mappedBy = "cliente")
+    @OneToMany(mappedBy="cliente")
     private List<Endereco> enderecos = new ArrayList<>();
 
     @ElementCollection
-    @CollectionTable(name ="TELEFONE")
-    private Set<String> telefones = new HashSet<>(); // conjunto de Strings
+    @CollectionTable(name="TELEFONE")
+    private Set<String> telefones = new HashSet<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "cliente")
+    @OneToMany(mappedBy="cliente")
     private List<Pedido> pedidos = new ArrayList<>();
 
     public Cliente() {
     }
 
-    public Cliente(Integer id, String nome, String email, String cpfOuCnpj, TipoCliente tipoCliente) {
+    public Cliente(Integer id, String nome, String email, String cpfOuCnpj, TipoCliente tipo) {
+        super();
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.cpfOuCnpj = cpfOuCnpj;
-        this.tipoCliente = (Objects.isNull(tipoCliente) ? null : tipoCliente.getCod());
+        this.tipo = (tipo==null) ? null : tipo.getCod();
     }
 
     public Integer getId() {
@@ -70,16 +70,16 @@ public class Cliente  implements Serializable {
         return cpfOuCnpj;
     }
 
-    public void setCpfOuCnpj(String cpf) {
-        this.cpfOuCnpj = cpf;
+    public void setCpfOuCnpj(String cpfOuCnpj) {
+        this.cpfOuCnpj = cpfOuCnpj;
     }
 
-    public TipoCliente getTipoCliente() {
-        return TipoCliente.toEnum(tipoCliente);
+    public TipoCliente getTipo() {
+        return TipoCliente.toEnum(tipo);
     }
 
-    public void setTipoCliente(TipoCliente tipoCliente) {
-        this.tipoCliente = tipoCliente.getCod();
+    public void setTipo(TipoCliente tipo) {
+        this.tipo = tipo.getCod();
     }
 
     public List<Endereco> getEnderecos() {
@@ -98,10 +98,6 @@ public class Cliente  implements Serializable {
         this.telefones = telefones;
     }
 
-    public void setTipoCliente(Integer tipoCliente) {
-        this.tipoCliente = tipoCliente;
-    }
-
     public List<Pedido> getPedidos() {
         return pedidos;
     }
@@ -111,15 +107,28 @@ public class Cliente  implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Cliente)) return false;
-        Cliente cliente = (Cliente) o;
-        return Objects.equals(getId(), cliente.getId());
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(getId());
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Cliente other = (Cliente) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        return true;
     }
+
 }
