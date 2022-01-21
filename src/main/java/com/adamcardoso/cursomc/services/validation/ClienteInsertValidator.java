@@ -1,5 +1,6 @@
 package com.adamcardoso.cursomc.services.validation;
 
+import com.adamcardoso.cursomc.domain.Cliente;
 import com.adamcardoso.cursomc.domain.enums.TipoCliente;
 import com.adamcardoso.cursomc.dto.ClienteNewDTO;
 import com.adamcardoso.cursomc.repositories.ClienteRepository;
@@ -11,6 +12,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ClienteInsertValidator implements ConstraintValidator<ClienteInsert, ClienteNewDTO> {
 
@@ -34,10 +36,10 @@ public class ClienteInsertValidator implements ConstraintValidator<ClienteInsert
             list.add(new FieldMessage("cpfouCnpj", "CNPJ inválido"));
         }
 
-        /*Cliente aux = repo.findByEmail(objDto.getEmail());
-        if (aux != null) {
+        Cliente aux = repo.findByEmail(objDto.getEmail());
+        if (Objects.nonNull(aux)) {
             list.add(new FieldMessage("email", "Email já existente"));
-        }*/
+        }
 
         for (FieldMessage e : list) {
             context.disableDefaultConstraintViolation();
