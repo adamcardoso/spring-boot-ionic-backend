@@ -12,16 +12,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/produtos")
+@RequestMapping(value="/produtos")
 public class ProdutoResource {
 
     @Autowired
     private ProdutoService service;
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<Produto> find(@PathVariable Integer id){
+    @RequestMapping(value="/{id}", method=RequestMethod.GET)
+    public ResponseEntity<Produto> find(@PathVariable Integer id) {
         Produto obj = service.find(id);
-
         return ResponseEntity.ok().body(obj);
     }
 

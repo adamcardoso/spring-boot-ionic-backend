@@ -11,46 +11,45 @@ import java.util.*;
 
 @Entity
 public class Pedido implements Serializable {
-
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer id;
 
-    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
+    @JsonFormat(pattern="dd/MM/yyyy HH:mm")
     private Date instante;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "pedido")
+    @OneToOne(cascade=CascadeType.ALL, mappedBy="pedido")
     private Pagamento pagamento;
 
     @ManyToOne
-    @JoinColumn(name = "cliente_id")
+    @JoinColumn(name="cliente_id")
     private Cliente cliente;
 
     @ManyToOne
-    @JoinColumn(name = "endereco_de_entrega_id")
+    @JoinColumn(name="endereco_de_entrega_id")
     private Endereco enderecoDeEntrega;
 
-    @OneToMany(mappedBy = "id.pedido")
+    @OneToMany(mappedBy="id.pedido")
     private Set<ItemPedido> itens = new HashSet<>();
 
     public Pedido() {
     }
 
     public Pedido(Integer id, Date instante, Cliente cliente, Endereco enderecoDeEntrega) {
+        super();
         this.id = id;
         this.instante = instante;
         this.cliente = cliente;
         this.enderecoDeEntrega = enderecoDeEntrega;
     }
 
-    public double getValorTotal(){
+    public double getValorTotal() {
         double soma = 0.0;
-
-        for (ItemPedido ip : itens){
-            soma += ip.getSubTotal();
+        for (ItemPedido ip : itens) {
+            soma = soma + ip.getSubTotal();
         }
-
         return soma;
     }
 
@@ -103,22 +102,34 @@ public class Pedido implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Pedido)) return false;
-        Pedido pedido = (Pedido) o;
-        return Objects.equals(getId(), pedido.getId());
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(getId());
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Pedido other = (Pedido) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        return true;
     }
 
     @Override
     public String toString() {
         NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         StringBuilder builder = new StringBuilder();
         builder.append("Pedido número: ");
         builder.append(getId());
@@ -129,14 +140,11 @@ public class Pedido implements Serializable {
         builder.append(", Situação do pagamento: ");
         builder.append(getPagamento().getEstado().getDescricao());
         builder.append("\nDetalhes:\n");
-
-        for (ItemPedido ip : getItens()){
+        for (ItemPedido ip : getItens()) {
             builder.append(ip.toString());
         }
-
         builder.append("Valor total: ");
         builder.append(nf.format(getValorTotal()));
-
         return builder.toString();
     }
 }

@@ -27,32 +27,26 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
                                     FilterChain chain) throws IOException, ServletException {
-        /*super.doFilterInternal(request, response, chain);*/
+
         String header = request.getHeader("Authorization");
-
-        // Libera a autorização do usuário
-        if (Objects.nonNull(header) && header.startsWith("Bearer ")){
-            UsernamePasswordAuthenticationToken auth = getAuthentication(request, header.substring(7));
-
-            if (Objects.nonNull(auth)){
+        if (header != null && header.startsWith("Bearer ")) {
+            UsernamePasswordAuthenticationToken auth = getAuthentication(header.substring(7));
+            if (auth != null) {
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
         }
-
         chain.doFilter(request, response);
     }
 
-    private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request, String token) {
-        if (jwtUtil.tokenValido(token)){
+    private UsernamePasswordAuthenticationToken getAuthentication(String token) {
+        if (jwtUtil.tokenValido(token)) {
             String username = jwtUtil.getUsername(token);
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-            return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            UserDetails user = userDetailsService.loadUserByUsername(username);
+            return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
         }
-
-
         return null;
     }
 }

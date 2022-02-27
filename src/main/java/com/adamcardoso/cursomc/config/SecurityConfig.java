@@ -31,71 +31,60 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
 
     @Autowired
-    private Environment environment;
+    private Environment env;
 
     @Autowired
     private JWTUtil jwtUtil;
 
     private static final String[] PUBLIC_MATCHERS = {
-        "/h2-console/**"
+            "/h2-console/**"
     };
 
     private static final String[] PUBLIC_MATCHERS_GET = {
             "/produtos/**",
-            "/categorias/**"
+            "/categorias/**",
+            "/estados/**"
     };
 
     private static final String[] PUBLIC_MATCHERS_POST = {
-            "/clientes",
-            "/clientes/picture",
-            "/categorias/**",
+            "/clientes/**",
             "/auth/forgot/**"
     };
 
     @Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception{
-        if (Arrays.asList(environment.getActiveProfiles()).contains("test")){
-            httpSecurity.headers()
-                    .frameOptions()
-                    .disable();
+    protected void configure(HttpSecurity http) throws Exception {
+
+        if (Arrays.asList(env.getActiveProfiles()).contains("test")) {
+            http.headers().frameOptions().disable();
         }
 
-        httpSecurity.cors()
-                .and()
-                .csrf()
-                .disable();
-        httpSecurity.authorizeRequests()
-                .antMatchers(HttpMethod.POST, PUBLIC_MATCHERS_POST)
-                .permitAll()
-                .antMatchers(HttpMethod.GET, PUBLIC_MATCHERS_GET)
-                .permitAll()
-                .antMatchers(PUBLIC_MATCHERS)
-                .permitAll()
-                .anyRequest()
-                .authenticated();
-        httpSecurity.addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtUtil));
-        httpSecurity.addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtUtil, userDetailsService));
-        httpSecurity.sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.cors().and().csrf().disable();
+        http.authorizeRequests()
+                .antMatchers(HttpMethod.POST, PUBLIC_MATCHERS_POST).permitAll()
+                .antMatchers(HttpMethod.GET, PUBLIC_MATCHERS_GET).permitAll()
+                .antMatchers(PUBLIC_MATCHERS).permitAll()
+                .anyRequest().authenticated();
+        http.addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtUtil));
+        http.addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtUtil, userDetailsService));
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
     @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception{
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
     }
 
-    /* Permite o acesso aos endpoints por multiplas fontes com configs basicas*/
     @Bean
-    CorsConfigurationSource corsConfigurationSource(){
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
+        configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
-
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder(){
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }

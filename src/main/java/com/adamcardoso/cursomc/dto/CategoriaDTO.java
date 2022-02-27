@@ -10,20 +10,18 @@ import javax.persistence.Id;
 import java.io.Serializable;
 
 public class CategoriaDTO implements Serializable {
-
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //geração automática dos IDs
     private Integer id;
-    @NotEmpty(message = "Preenchimento obrigatório")
-    @Length(min = 5, max = 80, message = "O tamanho deve ser entre 5 e 80 caracteres")
+
+    @NotEmpty(message="Preenchimento obrigatório")
+    @Length(min=5, max=80, message="O tamanho deve ser entre 5 e 80 caracteres")
     private String nome;
 
     public CategoriaDTO() {
     }
 
-    public CategoriaDTO(Categoria obj){
+    public CategoriaDTO(Categoria obj) {
         id = obj.getId();
         nome = obj.getNome();
     }

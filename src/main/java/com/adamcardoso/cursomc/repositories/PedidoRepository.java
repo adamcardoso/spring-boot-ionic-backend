@@ -11,6 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
 
-    @Transactional(readOnly = true)
+    @Transactional(readOnly=true)
     Page<Pedido> findByCliente(Cliente cliente, Pageable pageRequest);
 }

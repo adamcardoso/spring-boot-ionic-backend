@@ -18,10 +18,10 @@ import java.util.Optional;
 public class ProdutoService {
 
     @Autowired
-    private CategoriaRepository categoriaRepository;
+    private ProdutoRepository repo;
 
     @Autowired
-    private ProdutoRepository repo;
+    private CategoriaRepository categoriaRepository;
 
     public Produto find(Integer id) {
         Optional<Produto> obj = repo.findById(id);
@@ -29,12 +29,9 @@ public class ProdutoService {
                 "Objeto não encontrado! Id: " + id + ", Tipo: " + Produto.class.getName()));
     }
 
-    public Page<Produto> search(String nome, List<Integer> ids, Integer page, Integer linesPerPage,
-                                String orderBy, String direction) {
+    public Page<Produto> search(String nome, List<Integer> ids, Integer page, Integer linesPerPage, String orderBy, String direction) {
         PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
-
         List<Categoria> categorias = categoriaRepository.findAllById(ids);
-
-        return repo.findDistinctByNomeContainingAAndCategoriasIn(nome, categorias, pageRequest);
+        return repo.findDistinctByNomeContainingAndCategoriasIn(nome, categorias, pageRequest);
     }
 }
